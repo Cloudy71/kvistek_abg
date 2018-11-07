@@ -14,7 +14,7 @@ public class PlayerData : NetworkBehaviour {
     public float DamageAdder = 0f;
 
     [SyncVar]
-    public float Speed = 2f;
+    public float Speed = 3.5f;
 
     // Use this for initialization
     void Start() {

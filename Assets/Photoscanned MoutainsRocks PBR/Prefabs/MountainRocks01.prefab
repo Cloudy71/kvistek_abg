@@ -87,6 +87,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4507681577306286}
   - component: {fileID: 205730855469480914}
+  - component: {fileID: 64161734812030078}
   m_Layer: 0
   m_Name: MountainRocks01
   m_TagString: Untagged
@@ -289,6 +290,20 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1163727462444972}
   m_Mesh: {fileID: 4300002, guid: ee166cf2784e2814999b85fba5500431, type: 3}
+--- !u!64 &64161734812030078
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1474094727545224}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 14
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 0}
 --- !u!64 &64267482149982104
 MeshCollider:
   m_ObjectHideFlags: 1

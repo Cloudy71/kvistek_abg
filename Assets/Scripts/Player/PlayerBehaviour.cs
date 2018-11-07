@@ -23,7 +23,7 @@ public class PlayerBehaviour : NetworkBehaviour {
             return;
 
         _camera.transform.parent = transform;
-        _camera.transform.localPosition = new Vector3(0f, 1.8f, 0f);
+        _camera.transform.localPosition = new Vector3(0f, .8f, 0f);
 
         MouseMovement();
     }
@@ -31,6 +31,9 @@ public class PlayerBehaviour : NetworkBehaviour {
     private void MouseMovement() {
         if (Input.GetKeyDown(KeyCode.M))
             _mouseMove = !_mouseMove;
+
+        Cursor.lockState = _mouseMove ? CursorLockMode.Locked : CursorLockMode.None;
+
         if (!_mouseMove)
             return;
 
