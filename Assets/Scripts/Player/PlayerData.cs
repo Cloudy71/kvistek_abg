@@ -5,6 +5,9 @@ using UnityEngine.Networking;
 
 public class PlayerData : NetworkBehaviour {
     [SyncVar]
+    public bool IsReady = false;
+
+    [SyncVar]
     public float Health = 100f;
 
     [SyncVar]
