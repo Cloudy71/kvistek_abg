@@ -31,7 +31,7 @@ GameObject:
   - component: {fileID: 114272748510085304}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -165,7 +165,7 @@ MonoBehaviour:
   m_MovementTheshold: 0.001
   m_VelocityThreshold: 0.0001
   m_SnapThreshold: 5
-  m_InterpolateRotation: 1
+  m_InterpolateRotation: 90
   m_InterpolateMovement: 1
 --- !u!114 &114444843736658530
 MonoBehaviour:
@@ -200,10 +200,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f51b97e9708563a45ad6964be9375872, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsReady: 0
+  IsDead: 0
   Health: 100
   HealthMax: 100
   DamageAdder: 0
   Speed: 3.5
+  Ammo: 12
+  DeadSince: 0
 --- !u!114 &114988762563729914
 MonoBehaviour:
   m_ObjectHideFlags: 1

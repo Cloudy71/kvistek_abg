@@ -4,26 +4,33 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public class Manager : NetworkManager {
-    public static bool  MatchStarted;
-    public static float TimeToStart    = 30f;
-    public static float TimeSinceStart = -1f;
-
+    public static bool InitWithOnePlayer = false;
+    
     // Use this for initialization
     void Start() {
-        MatchStarted = false;
     }
 
     // Update is called once per frame
     void Update() {
     }
 
-    public override void OnClientConnect(NetworkConnection conn) {
-        if (MatchStarted) {
+    public override void OnStartServer() {
+        base.OnStartServer();
+    }
+
+    public override void OnServerConnect(NetworkConnection conn) {
+        if (conn.connectionId == 0 && GameManager.GAMEMANAGER == null) {
+            base.OnServerConnect(conn);
+            InitWithOnePlayer = true;
+            return;
+        }
+
+        if (GameManager.GAMEMANAGER.MatchStarted) {
             conn.Disconnect();
             return;
         }
 
-        base.OnClientConnect(conn);
-        
+        base.OnServerConnect(conn);
+        GameManager.GAMEMANAGER.Players++;
     }
 }
