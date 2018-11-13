@@ -23,6 +23,9 @@ public class PlayerData : NetworkBehaviour {
     public float Speed = 3.5f;
 
     [SyncVar]
+    public float SprintSpeed = 5f;
+
+    [SyncVar]
     public int Ammo = 12;
 
     [SyncVar]

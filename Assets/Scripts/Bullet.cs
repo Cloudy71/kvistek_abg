@@ -30,7 +30,8 @@ public class Bullet : NetworkBehaviour {
             Destroy(gameObject);
         }
 
-        RaycastHit[] raycastHits = Physics.RaycastAll(transform.position, transform.forward, Speed * Time.deltaTime);
+        RaycastHit[] raycastHits =
+            Physics.RaycastAll(transform.position, transform.forward, Speed * Time.deltaTime / 2f);
 
         GameObject nearest = null;
         float dist = float.MaxValue;

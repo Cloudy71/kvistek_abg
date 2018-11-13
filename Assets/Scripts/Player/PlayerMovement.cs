@@ -29,26 +29,27 @@ public class PlayerMovement : NetworkBehaviour {
 
     private void KeyboardMovement() {
         Vector3 velocity = Vector3.zero;
+        float speed = Input.GetKey(KeyCode.LeftShift) ? _playerData.SprintSpeed : _playerData.Speed;
 
         if (Input.GetKey(KeyCode.W)) {
-            velocity += transform.forward * _playerData.Speed;
+            velocity += transform.forward * speed;
         }
 
         if (Input.GetKey(KeyCode.S)) {
-            velocity -= transform.forward * _playerData.Speed;
+            velocity -= transform.forward * speed;
         }
 
         if (Input.GetKey(KeyCode.D)) {
-            velocity += transform.right * _playerData.Speed;
+            velocity += transform.right * speed;
         }
 
         if (Input.GetKey(KeyCode.A)) {
-            velocity -= transform.right * _playerData.Speed;
+            velocity -= transform.right * speed;
         }
 
         velocity.y = GetComponent<Rigidbody>().velocity.y;
 
-        if (Input.GetKeyDown(KeyCode.Space)) {
+        if (Input.GetKeyDown(KeyCode.Space) && Physics.Raycast(transform.position, -transform.up, 1.5f)) {
             velocity.y += 5f;
             if (transform.position.y > _spawnObject.transform.position.y) {
                 velocity.y = 0f;
@@ -59,7 +60,6 @@ public class PlayerMovement : NetworkBehaviour {
     }
 
     private void MouseAttack() {
-        Debug.DrawRay(_camera.transform.position, _camera.transform.forward * 10f, Color.blue);
         if (Input.GetMouseButtonDown(0) && _playerData.Ammo > 0) {
             CmdShotBullet(_camera.transform.position, _camera.transform.forward);
         }
@@ -95,6 +95,7 @@ public class PlayerMovement : NetworkBehaviour {
 
         bullet.GetComponent<Bullet>().Damage = 45f;
         bullet.GetComponent<Bullet>().Speed = 190f;
+        _playerData.Ammo--;
         NetworkServer.Spawn(bullet);
     }
 }
