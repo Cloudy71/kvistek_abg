@@ -60,7 +60,7 @@ public class PlayerMovement : NetworkBehaviour {
     }
 
     private void MouseAttack() {
-        if (Input.GetMouseButtonDown(0) && _playerData.Ammo > 0) {
+        if (Input.GetMouseButtonDown(0) && _playerData.CurrentWeapon != -1 && _playerData.GetWeaponData().CanShot()) {
             CmdShotBullet(_camera.transform.position, _camera.transform.forward);
         }
     }
@@ -83,19 +83,11 @@ public class PlayerMovement : NetworkBehaviour {
             }
         }
 
-        GameObject bullet = Instantiate(GameManager.GAMEMANAGER.Bullet,
-                                        position - new Vector3(0f, 0.2f, 0f),
-                                        Quaternion.identity);
-        if (!point.Equals(Vector3.zero)) {
-            bullet.transform.LookAt(point);
-        }
-        else {
+        GameObject bullet = _playerData.GetWeaponData().Shot(position - new Vector3(0f, 0.2f, 0f), point);
+        if (point.Equals(Vector3.zero)) {
             bullet.transform.rotation = _camera.transform.rotation;
         }
 
-        bullet.GetComponent<Bullet>().Damage = 45f;
-        bullet.GetComponent<Bullet>().Speed = 190f;
-        _playerData.Ammo--;
         NetworkServer.Spawn(bullet);
     }
 }

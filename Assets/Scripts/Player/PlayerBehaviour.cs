@@ -36,6 +36,7 @@ public class PlayerBehaviour : NetworkBehaviour {
 
         if (!_playerData.IsDead) {
             MouseMovement();
+            EquipChecking();
         }
     }
 
@@ -57,6 +58,13 @@ public class PlayerBehaviour : NetworkBehaviour {
         _camera.transform.localEulerAngles = new Vector3(_camera.transform.eulerAngles.x - my, 0f, 0f);
     }
 
+    private void EquipChecking() {
+        RaycastHit[] hits = Physics.RaycastAll(_camera.transform.position, _camera.transform.forward, 3f);
+        foreach (RaycastHit raycastHit in hits) {
+            //TODO: Pickup
+        }
+    }
+
     private void OnTriggerEnter(Collider other) {
         if (other.name.Equals("ReadyPlane")) {
             if (!GameManager.GAMEMANAGER.MatchStarted) {
@@ -67,9 +75,14 @@ public class PlayerBehaviour : NetworkBehaviour {
                 }
             }
             else {
-                _playerData.Ride();
+                CmdRide();
             }
         }
+    }
+
+    [Command]
+    public void CmdRide() {
+        GameManager.GAMEMANAGER.RidePlayer(gameObject);
     }
 
     private void OnTriggerExit(Collider other) {

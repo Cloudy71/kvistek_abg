@@ -8,6 +8,9 @@ public class Bullet : NetworkBehaviour {
     public float Damage;
 
     [SyncVar]
+    public float DamageHeadshot;
+
+    [SyncVar]
     public float Speed;
 
     [SyncVar]

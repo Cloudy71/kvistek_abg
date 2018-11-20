@@ -26,10 +26,10 @@ public class PlayerData : NetworkBehaviour {
     public float SprintSpeed = 5f;
 
     [SyncVar]
-    public int Ammo = 12;
+    public float DeadSince = 0f;
 
     [SyncVar]
-    public float DeadSince = 0f;
+    public int CurrentWeapon = -1;
 
     // Use this for initialization
     void Start() {
@@ -92,13 +92,35 @@ public class PlayerData : NetworkBehaviour {
     }
 
     [TargetRpc]
-    public void TargetRide(NetworkConnection target) {
-        Ride();
+    public void TargetRide(NetworkConnection target, Vector3 pos) {
+        Ride(pos);
     }
 
-    public void Ride() {
-        Vector3 pos = new Vector3(Random.Range(0f, 500f), 450f, Random.Range(0f, 500f));
-        GameObject rider = Instantiate(GameManager.GAMEMANAGER.Rider, pos, Quaternion.identity);
+    public void Ride(Vector3 pos) {
         transform.position = pos + new Vector3(0f, 0.5f, 0f);
+    }
+
+    public GameObject GetWeapon() {
+        return CurrentWeapon == -1 ? null : transform.GetChild(0).GetChild(CurrentWeapon).gameObject;
+    }
+
+    public Weapon GetWeaponData() {
+        return CurrentWeapon == -1 ? null : transform.GetChild(0).GetChild(CurrentWeapon).GetComponent<Weapon>();
+    }
+
+    [Command]
+    public void CmdPickUp(NetworkInstanceId weaponId) {
+        GameObject weapon = NetworkServer.FindLocalObject(weaponId);
+        weapon.GetComponent<NetworkIdentity>().AssignClientAuthority(connectionToClient);
+        weapon.transform.parent = transform.GetChild(0);
+        weapon.GetComponent<Weapon>().IsPicked = true;
+    }
+
+    [Command]
+    public void CmdDrop() {
+        GameObject weapon = GetWeapon();
+        weapon.GetComponent<NetworkIdentity>().RemoveClientAuthority(connectionToClient);
+        weapon.transform.parent = null;
+        weapon.GetComponent<Weapon>().IsPicked = false;
     }
 }
