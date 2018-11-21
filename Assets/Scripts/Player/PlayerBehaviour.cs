@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 public class PlayerBehaviour : NetworkBehaviour {
     private Camera     _camera;
     private PlayerData _playerData;
+    private PlayerGUI  _playerGui;
 
     private GameObject _spawnObject;
 
@@ -16,6 +17,7 @@ public class PlayerBehaviour : NetworkBehaviour {
     void Start() {
         _camera = Camera.main;
         _playerData = GetComponent<PlayerData>();
+        _playerGui = GetComponent<PlayerGUI>();
         _mouseMove = true;
         _spawnObject = GameObject.Find("SPAWN");
     }
@@ -60,8 +62,29 @@ public class PlayerBehaviour : NetworkBehaviour {
 
     private void EquipChecking() {
         RaycastHit[] hits = Physics.RaycastAll(_camera.transform.position, _camera.transform.forward, 3f);
+        GameObject nearest = null;
+        float dist = float.MaxValue;
+        int type = -1;
         foreach (RaycastHit raycastHit in hits) {
-            //TODO: Pickup
+            if (raycastHit.transform.tag.Equals("Weapon")) {
+                if (raycastHit.distance < dist) {
+                    nearest = raycastHit.transform.gameObject;
+                    dist = raycastHit.distance;
+                    type = 0;
+                }
+            }
+        }
+
+        _playerGui.ShowPickup = false;
+        if (nearest != null) {
+            if (type == 0) {
+                if (!nearest.GetComponent<Weapon>().IsPicked) {
+                    _playerGui.ShowPickup = true;
+                    if (Input.GetKeyDown(KeyCode.E)) {
+                        _playerData.CmdPickUp(nearest.GetComponent<NetworkIdentity>().netId);
+                    }
+                }
+            }
         }
     }
 

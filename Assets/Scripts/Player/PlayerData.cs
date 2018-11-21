@@ -114,6 +114,8 @@ public class PlayerData : NetworkBehaviour {
         weapon.GetComponent<NetworkIdentity>().AssignClientAuthority(connectionToClient);
         weapon.transform.parent = transform.GetChild(0);
         weapon.GetComponent<Weapon>().IsPicked = true;
+
+        Debug.Log("PICKED UP WEAPON!!!");
     }
 
     [Command]

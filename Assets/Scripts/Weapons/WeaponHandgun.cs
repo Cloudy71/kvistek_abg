@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class WeaponHandgun : Weapon {
     // Use this for initialization
-    void Start() {
+
+    public override void Stats() {
         Name = "Handgun";
         MaxAmmo = 12;
         Ammo = MaxAmmo;
@@ -15,9 +16,5 @@ public class WeaponHandgun : Weapon {
         DamageHeadshot = 70f;
         BulletSpeed = 190f;
         Cooldown = 0.1f;
-    }
-
-    // Update is called once per frame
-    void Update() {
     }
 }

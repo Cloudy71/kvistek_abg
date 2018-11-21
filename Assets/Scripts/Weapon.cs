@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -44,14 +45,28 @@ public class Weapon : NetworkBehaviour {
     [SyncVar]
     public bool IsPicked;
 
+    private Transform model;
+
     // Use this for initialization
     void Start() {
+        model = transform.GetChild(0);
+        Stats();
     }
 
     // Update is called once per frame
     void Update() {
         if (IsPicked) {
+            transform.localPosition = Vector3.zero;
+            model.GetComponent<Collider>().enabled = false;
+            GetComponent<Rigidbody>().isKinematic = true;
         }
+        else {
+            model.GetComponent<Collider>().enabled = true;
+            GetComponent<Rigidbody>().isKinematic = false;
+        }
+    }
+
+    public virtual void Stats() {
     }
 
     public virtual bool CanShot() {

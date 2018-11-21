@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public class PlayerGUI : NetworkBehaviour {
+    [HideInInspector]
+    public bool ShowPickup = false;
+
     private PlayerData _playerData;
 
     // Use this for initialization
@@ -26,5 +29,11 @@ public class PlayerGUI : NetworkBehaviour {
         GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), bloodyScreen, ScaleMode.StretchToFill);
         GUI.color = new Color(1f, 1f, 1f);
         GUI.DrawTexture(new Rect(Screen.width / 2f - 400f, Screen.height / 2f - 300f, 800f, 600f), crosshair);
+
+        if (ShowPickup) {
+            GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+            GUI.Label(new Rect(Screen.width / 2f - 160f, Screen.height / 2f + 64f, 320f, 24f),
+                      "Press <E> to pick up weapon.");
+        }
     }
 }
