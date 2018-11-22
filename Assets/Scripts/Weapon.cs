@@ -45,11 +45,13 @@ public class Weapon : NetworkBehaviour {
     [SyncVar]
     public bool IsPicked;
 
-    private Transform model;
+    private Transform _model;
+    private Camera    _camera;
 
     // Use this for initialization
     void Start() {
-        model = transform.GetChild(0);
+        _model = transform.GetChild(0);
+        _camera = Camera.main;
         Stats();
     }
 
@@ -57,12 +59,17 @@ public class Weapon : NetworkBehaviour {
     void Update() {
         if (IsPicked) {
             transform.localPosition = Vector3.zero;
-            model.GetComponent<Collider>().enabled = false;
+            _model.GetComponent<Collider>().enabled = false;
+            _model.transform.parent = _camera.transform;
+            _model.transform.localPosition = new Vector3(0.1f, -0.05f, 0.325f);
+            _model.transform.localEulerAngles = Vector3.zero;
             GetComponent<Rigidbody>().isKinematic = true;
         }
         else {
-            model.GetComponent<Collider>().enabled = true;
+            _model.GetComponent<Collider>().enabled = true;
             GetComponent<Rigidbody>().isKinematic = false;
+            _model.transform.parent = transform;
+            _model.transform.localPosition = Vector3.zero;
         }
     }
 
