@@ -23,8 +23,10 @@ public class GameManager : NetworkBehaviour {
     [SyncVar]
     public float TimeSinceStart = -1f;
 
-    public GameObject Rider;
-    public GameObject Bullet;
+    public GameObject   Rider;
+    public GameObject   Bullet;
+    public GameObject[] RandomWeapons;
+    public GameObject   BulletHole;
 
     private Text _textReady;
 

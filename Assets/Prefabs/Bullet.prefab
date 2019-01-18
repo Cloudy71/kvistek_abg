@@ -53,7 +53,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1218341215229082}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 95.315994, y: 220.1, z: 296.1392}
+  m_LocalPosition: {x: 32.197315, y: 0.02500001, z: 104.23268}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4976836955106668}
@@ -79,7 +79,7 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1371985069963866}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -251,5 +251,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Damage: 15
+  DamageHeadshot: 0
   Speed: 10
   SourceId: 0

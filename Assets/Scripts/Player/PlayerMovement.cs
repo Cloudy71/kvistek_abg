@@ -4,15 +4,23 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public class PlayerMovement : NetworkBehaviour {
-    private PlayerData _playerData;
-    private Camera     _camera;
-    private GameObject _spawnObject;
+    private PlayerData      _playerData;
+    private PlayerBehaviour _playerBehaviour;
+    private Camera          _camera;
+    private GameObject      _spawnObject;
+
+    private float _stepCooldownMove;
+    private float _stepCooldownSprint;
+    private float _stepLast;
 
     // Use this for initialization
     void Start() {
         _playerData = GetComponent<PlayerData>();
+        _playerBehaviour = GetComponent<PlayerBehaviour>();
         _camera = Camera.main;
         _spawnObject = GameObject.Find("SPAWN");
+        _stepCooldownMove = 0.5f;
+        _stepCooldownSprint = 0.35f;
     }
 
     // Update is called once per frame
@@ -49,7 +57,7 @@ public class PlayerMovement : NetworkBehaviour {
 
         velocity.y = GetComponent<Rigidbody>().velocity.y;
 
-        if (Input.GetKeyDown(KeyCode.Space) && Physics.Raycast(transform.position, -transform.up, 1.5f)) {
+        if (Input.GetKeyDown(KeyCode.Space) && Physics.Raycast(transform.position, -transform.up, 1.1f)) {
             velocity.y += 5f;
             if (transform.position.y > _spawnObject.transform.position.y) {
                 velocity.y = 0f;
@@ -57,11 +65,37 @@ public class PlayerMovement : NetworkBehaviour {
         }
 
         GetComponent<Rigidbody>().velocity = velocity;
+
+        if (!velocity.x.Equals(0f) || !velocity.z.Equals(0f)) {
+            bool sprint = Input.GetKey(KeyCode.LeftShift);
+            if (Time.time >= _stepLast + (sprint ? _stepCooldownSprint : _stepCooldownMove)) {
+                RaycastHit[] hits = Physics.RaycastAll(transform.position, -transform.up, 1.1f);
+                bool col = false;
+                foreach (RaycastHit raycastHit in hits) {
+                    if (raycastHit.transform.name.Equals(name))
+                        continue;
+
+                    col = true;
+                    break;
+                }
+
+                if (col) {
+                    _stepLast = Time.time;
+                    _playerBehaviour.CmdMakeStep();
+                }
+            }
+        }
     }
 
     private void MouseAttack() {
-        if (Input.GetMouseButtonDown(0) && _playerData.CurrentWeapon != -1 && _playerData.GetWeaponData().CanShot()) {
-            CmdShotBullet(_camera.transform.position, _camera.transform.forward);
+        if (_playerData.CurrentWeapon != -1 && _playerData.GetWeaponData().CanShot()) {
+            if (Input.GetMouseButtonDown(0) && !_playerData.GetWeaponData().IsPrimary) {
+                CmdShotBullet(_camera.transform.position, _camera.transform.forward);
+            }
+
+            if (Input.GetMouseButton(0) && _playerData.GetWeaponData().IsPrimary) {
+                CmdShotBullet(_camera.transform.position, _camera.transform.forward);
+            }
         }
     }
 
@@ -83,10 +117,12 @@ public class PlayerMovement : NetworkBehaviour {
             }
         }
 
-        GameObject bullet = _playerData.GetWeaponData().Shot(position - new Vector3(0f, 0.2f, 0f), point);
+        GameObject bullet = _playerData.GetWeaponData().Shot(point);
         if (point.Equals(Vector3.zero)) {
             bullet.transform.rotation = _camera.transform.rotation;
         }
+
+        bullet.GetComponent<Bullet>().SourceId = netId.Value;
 
         NetworkServer.Spawn(bullet);
     }

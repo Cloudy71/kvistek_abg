@@ -49,6 +49,14 @@ public class PlayerData : NetworkBehaviour {
             return;
 
         CmdTakeDamage(damage);
+        int sideX, sideY;
+        sideX = Random.Range(0, 2);
+        sideY = Random.Range(0, 2);
+        if (sideX == 0) sideX = -1;
+        if (sideY == 0) sideY = -1;
+        GetComponent<PlayerBehaviour>()
+            .AddRecoil(new Vector2(Random.Range(6f, 8f) * sideX, Random.Range(6f, 8f) * sideY));
+        GetComponent<PlayerGUI>().GoRed();
 
         if (Health <= 0f) {
             TargetDie(connectionToClient, source.transform.forward);
@@ -114,8 +122,7 @@ public class PlayerData : NetworkBehaviour {
         weapon.GetComponent<NetworkIdentity>().AssignClientAuthority(connectionToClient);
         weapon.transform.parent = transform.GetChild(0);
         weapon.GetComponent<Weapon>().IsPicked = true;
-
-        Debug.Log("PICKED UP WEAPON!!!");
+        CmdEquip(transform.GetChild(0).childCount - 1);
     }
 
     [Command]
@@ -124,5 +131,20 @@ public class PlayerData : NetworkBehaviour {
         weapon.GetComponent<NetworkIdentity>().RemoveClientAuthority(connectionToClient);
         weapon.transform.parent = null;
         weapon.GetComponent<Weapon>().IsPicked = false;
+    }
+
+    [Command]
+    public void CmdEquip(int weaponSlot) {
+        if (transform.GetChild(0).childCount <= weaponSlot) {
+            return;
+        }
+
+        Weapon oldWeapon = GetWeaponData();
+        if (oldWeapon != null) {
+            oldWeapon.IsUsed = false;
+        }
+
+        CurrentWeapon = weaponSlot;
+        GetWeaponData().IsUsed = true;
     }
 }

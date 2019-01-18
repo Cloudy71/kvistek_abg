@@ -15,6 +15,16 @@ public class WeaponHandgun : Weapon {
         DamageBody = 30f;
         DamageHeadshot = 70f;
         BulletSpeed = 190f;
-        Cooldown = 0.1f;
+        Cooldown = .3f;
+
+        RecoilX = new Vector2(-1f, 1f);
+        RecoilY = new Vector2(-1f, -1f);
+        RecoilXDiff = 1f;
+        RecoilYDiff = 1f;
+        RecoilBackTime = 1f;
+        MoveDistraction = 1f;
+        SprintDistraction = 2f;
+
+        WeaponPosition = new Vector3(0.1f, -0.05f, 0.325f);
     }
 }

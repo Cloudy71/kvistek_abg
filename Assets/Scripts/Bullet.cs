@@ -27,34 +27,45 @@ public class Bullet : NetworkBehaviour {
     void Update() {
         transform.Translate(Vector3.forward * Time.deltaTime * Speed, transform);
         if (transform.position.x < 0f                                 || transform.position.x > 500f ||
-            transform.position.y < 0f                                 ||
+            transform.position.y < -20f                               ||
             transform.position.y >= _spawnObject.transform.position.y || transform.position.z < 0f ||
             transform.position.z > 500f) {
             Destroy(gameObject);
         }
 
         RaycastHit[] raycastHits =
-            Physics.RaycastAll(transform.position, transform.forward, Speed * Time.deltaTime / 2f);
+            Physics.RaycastAll(transform.position - transform.forward * Speed * Time.deltaTime, transform.forward,
+                               Speed * Time.deltaTime);
 
-        GameObject nearest = null;
-        float dist = float.MaxValue;
-        foreach (RaycastHit raycastHit in raycastHits) {
-            if (raycastHit.transform.gameObject.Equals(gameObject)) {
-                continue;
+        if (raycastHits.Length > 0) {
+            RaycastHit nearest = raycastHits[0];
+            float dist = float.MaxValue;
+            foreach (RaycastHit raycastHit in raycastHits) {
+                if (raycastHit.transform.gameObject.Equals(gameObject)) {
+                    continue;
+                }
+
+                if (raycastHit.distance <= dist && !(raycastHit.transform.tag.Equals("Player") &&
+                                                     raycastHit.transform.GetComponent<PlayerData>().netId.Value ==
+                                                     SourceId)) {
+                    dist = raycastHit.distance;
+                    nearest = raycastHit;
+                }
             }
 
-            if (raycastHit.distance <= dist) {
-                dist = raycastHit.distance;
-                nearest = raycastHit.transform.gameObject;
-            }
-        }
+            if (!dist.Equals(float.MaxValue)) {
+                if (nearest.transform.tag.Equals("Player")) {
+                    nearest.transform.GetComponent<PlayerData>().TakeDamage(Damage, gameObject);
+                }
+                else {
+                    GameObject bulletHole =
+                        GameObject.Instantiate(GameManager.GAMEMANAGER.BulletHole, nearest.point,
+                                               Quaternion.FromToRotation(Vector3.up, nearest.normal));
+                    bulletHole.transform.Translate(bulletHole.transform.up * 0.025f);
+                }
 
-        if (nearest != null) {
-            if (nearest.tag.Equals("Player")) {
-                nearest.GetComponent<PlayerData>().TakeDamage(Damage, gameObject);
+                Destroy(gameObject);
             }
-
-            Destroy(gameObject);
         }
     }
 }

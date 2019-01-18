@@ -91,3 +91,6 @@ MonoBehaviour:
   TimeSinceStart: -1
   Rider: {fileID: 1165578801081024, guid: 324f2989a34163d4e8475f6fe3ed641d, type: 2}
   Bullet: {fileID: 1218341215229082, guid: c2d0c278b40ce2f4dad081554f06aacd, type: 2}
+  RandomWeapons:
+  - {fileID: 1217345903372598, guid: a51dd6cc938f28546a8ea5916f0012f1, type: 2}
+  BulletHole: {fileID: 1344217711491134, guid: 7a256035892cbc64b8e162fcdb5bd3b1, type: 2}

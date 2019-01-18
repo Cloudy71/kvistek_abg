@@ -9,13 +9,32 @@ public class PlayerGUI : NetworkBehaviour {
 
     private PlayerData _playerData;
 
+    private float _redScreen;
+
     // Use this for initialization
     void Start() {
         _playerData = GetComponent<PlayerData>();
+        _redScreen = 0f;
     }
 
     // Update is called once per frame
     void Update() {
+    }
+
+    private void FixedUpdate() {
+        if (_redScreen > 0f) {
+            _redScreen -= 0.005f;
+            if (_redScreen < 0f) _redScreen = 0f;
+        }
+    }
+
+    public void GoRed() {
+        RpcGoRed(connectionToClient);
+    }
+
+    [TargetRpc]
+    public void RpcGoRed(NetworkConnection target) {
+        _redScreen = 0.5f;
     }
 
     private void OnGUI() {
@@ -29,6 +48,10 @@ public class PlayerGUI : NetworkBehaviour {
         GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), bloodyScreen, ScaleMode.StretchToFill);
         GUI.color = new Color(1f, 1f, 1f);
         GUI.DrawTexture(new Rect(Screen.width / 2f - 400f, Screen.height / 2f - 300f, 800f, 600f), crosshair);
+
+        GUI.color = new Color(1f, 1f, 1f, _redScreen);
+        GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), AssetLoader.GetColor(Color.red));
+        GUI.color = new Color(1f, 1f, 1f);
 
         if (ShowPickup) {
             GUI.skin.label.alignment = TextAnchor.MiddleCenter;
