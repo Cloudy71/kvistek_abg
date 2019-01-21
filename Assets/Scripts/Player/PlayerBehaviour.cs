@@ -19,14 +19,21 @@ public class PlayerBehaviour : NetworkBehaviour {
     [HideInInspector]
     public Vector2 HitRecoilStep;
 
-    public  AudioClip[] Steps;
-    private int         _lastSoundId;
+    public AudioClip[] Steps;
 
-    private Camera     _camera;
-    private PlayerData _playerData;
-    private PlayerGUI  _playerGui;
+    [HideInInspector]
+    public bool RealCamera;
+
+    private int _lastSoundId;
+
+    private Camera         _camera;
+    private PlayerData     _playerData;
+    private PlayerGUI      _playerGui;
+    private PlayerMovement _playerMovement;
 
     private GameObject _spawnObject;
+    private Transform  _model;
+    private Transform  _headBone;
 
     private bool    _mouseMove;
     private float   _cameraX;
@@ -38,10 +45,15 @@ public class PlayerBehaviour : NetworkBehaviour {
         _camera = Camera.main;
         _playerData = GetComponent<PlayerData>();
         _playerGui = GetComponent<PlayerGUI>();
+        _playerMovement = GetComponent<PlayerMovement>();
         _mouseMove = true;
         _spawnObject = GameObject.Find("SPAWN");
+        _model = transform.GetChild(1);
+        _headBone = _model.transform.GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetChild(1).GetChild(0)
+                          .GetChild(1);
 
         ShotRecoilStep = new Vector2(.025f, .4f);
+        RealCamera = false;
     }
 
     // Update is called once per frame
@@ -55,14 +67,34 @@ public class PlayerBehaviour : NetworkBehaviour {
         if (!isLocalPlayer)
             return;
 
-        GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-        _camera.transform.parent = transform;
+        string clipName = _model.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.name;
+        RealCamera = clipName.StartsWith("_");
+
+        //GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+        /*_camera.transform.parent = transform;
         _camera.transform.localPosition = new Vector3(0f, .8f, 0f);
-        _camera.transform.localEulerAngles = new Vector3(_cameraX + Recoil.y, Recoil.x, 0f);
+        _camera.transform.localEulerAngles = new Vector3(_cameraX + Recoil.y, Recoil.x, 0f);*/
+        if (RealCamera) {
+            _camera.transform.parent = _headBone;
+            _camera.transform.localPosition = Vector3.zero;
+            //_camera.transform.localPosition = new Vector3(0f, .05f, .045f);
+            _camera.transform.localEulerAngles = new Vector3(_cameraX + Recoil.y, Recoil.x, 0f);
+            _camera.nearClipPlane = 0.01f;
+            _playerMovement.CanMove = false;
+        }
+        else {
+            _camera.transform.parent = null;
+            _camera.transform.localPosition = Vector3.zero;
+            _camera.transform.position = _headBone.transform.position;
+            _camera.transform.eulerAngles = new Vector3(_cameraX + Recoil.y, transform.eulerAngles.y + Recoil.x, 0f);
+            _camera.nearClipPlane = 0.15f;
+            _playerMovement.CanMove = true;
+        }
 
         if (!_playerData.IsDead) {
             MouseMovement();
             EquipChecking();
+            ControllerParameterUpdate();
         }
     }
 
@@ -83,9 +115,17 @@ public class PlayerBehaviour : NetworkBehaviour {
         else if (!Recoil.Equals(Vector2.zero)) {
             SetRecoil(Vector2.zero);
         }
+
+        if (!isServer) {
+            return;
+        }
+
+        HealthRegen();
     }
 
     private void MouseMovement() {
+        if (!_playerMovement.CanMove) return;
+
         if (Input.GetKeyDown(KeyCode.M))
             _mouseMove = !_mouseMove;
 
@@ -101,6 +141,8 @@ public class PlayerBehaviour : NetworkBehaviour {
 
         transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y + mx, 0f);
         _cameraX -= my;
+        if (_cameraX      > 70f) _cameraX = 70f;
+        else if (_cameraX < -80f) _cameraX = -80f;
     }
 
     private void EquipChecking() {
@@ -129,6 +171,20 @@ public class PlayerBehaviour : NetworkBehaviour {
                 }
             }
         }
+    }
+
+    private void ControllerParameterUpdate() {
+        _model.GetComponent<Animator>().SetInteger("MoveType", _playerMovement.MoveType);
+    }
+
+    private void HealthRegen() {
+        if (Time.time < _playerData.LastDamaged + 5f || _playerData.Health >= _playerData.HealthMax ||
+            _playerData.IsDead) {
+            return;
+        }
+
+        _playerData.Health += 0.25f;
+        if (_playerData.Health > _playerData.HealthMax) _playerData.Health = _playerData.HealthMax;
     }
 
     private void OnTriggerEnter(Collider other) {
@@ -198,5 +254,22 @@ public class PlayerBehaviour : NetworkBehaviour {
     [ClientRpc]
     public void RpcMakeStep(int snd) {
         GetComponent<AudioSource>().PlayOneShot(Steps[snd]);
+    }
+
+    public void PlayAnimation(string name) {
+        RpcPlayAnimation(name);
+    }
+
+    [ClientRpc]
+    public void RpcPlayAnimation(string name) {
+        _model.GetComponent<Animator>().Play(name);
+    }
+
+    public void ResetView() {
+        TargetResetView(connectionToClient);
+    }
+
+    public void TargetResetView(NetworkConnection target) {
+        _cameraX = 0f;
     }
 }

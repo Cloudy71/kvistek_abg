@@ -55,12 +55,19 @@ public class Bullet : NetworkBehaviour {
 
             if (!dist.Equals(float.MaxValue)) {
                 if (nearest.transform.tag.Equals("Player")) {
-                    nearest.transform.GetComponent<PlayerData>().TakeDamage(Damage, gameObject);
+                    if (isServer) {
+                        nearest.transform.GetComponent<PlayerData>().TakeDamage(Damage, gameObject);
+                    }
+                }
+                else if (nearest.transform.tag.Equals("Breakable")) {
+                    if (isServer) {
+                        nearest.transform.GetComponent<Entity>().TakeDamage(Damage);
+                    }
                 }
                 else {
                     GameObject bulletHole =
-                        GameObject.Instantiate(GameManager.GAMEMANAGER.BulletHole, nearest.point,
-                                               Quaternion.FromToRotation(Vector3.up, nearest.normal));
+                        Instantiate(GameManager.GAMEMANAGER.BulletHole, nearest.point,
+                                    Quaternion.FromToRotation(Vector3.up, nearest.normal));
                     bulletHole.transform.Translate(bulletHole.transform.up * 0.025f);
                 }
 

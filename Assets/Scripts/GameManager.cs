@@ -70,6 +70,7 @@ public class GameManager : NetworkBehaviour {
     public void RidePlayer(GameObject player) {
         Vector3 pos = new Vector3( /*Random.Range(0f, 500f), 450f, Random.Range(0f, 500f)*/32f, 50f, 104f);
         GameObject rider = Instantiate(Rider, pos, Quaternion.identity);
+        rider.GetComponent<Rider>().Owner = player;
         NetworkServer.Spawn(rider);
         player.GetComponent<PlayerData>().TargetRide(player.GetComponent<PlayerData>().connectionToClient, pos);
     }

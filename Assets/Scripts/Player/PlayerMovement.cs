@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public class PlayerMovement : NetworkBehaviour {
+    public bool CanMove = true;
+
     private PlayerData      _playerData;
     private PlayerBehaviour _playerBehaviour;
     private Camera          _camera;
@@ -13,6 +15,10 @@ public class PlayerMovement : NetworkBehaviour {
     private float _stepCooldownSprint;
     private float _stepLast;
 
+    [HideInInspector]
+    [SyncVar]
+    public int MoveType;
+
     // Use this for initialization
     void Start() {
         _playerData = GetComponent<PlayerData>();
@@ -21,6 +27,8 @@ public class PlayerMovement : NetworkBehaviour {
         _spawnObject = GameObject.Find("SPAWN");
         _stepCooldownMove = 0.5f;
         _stepCooldownSprint = 0.35f;
+
+        MoveType = 0;
     }
 
     // Update is called once per frame
@@ -36,6 +44,8 @@ public class PlayerMovement : NetworkBehaviour {
     }
 
     private void KeyboardMovement() {
+        if (!CanMove) return;
+
         Vector3 velocity = Vector3.zero;
         float speed = Input.GetKey(KeyCode.LeftShift) ? _playerData.SprintSpeed : _playerData.Speed;
 
@@ -55,6 +65,10 @@ public class PlayerMovement : NetworkBehaviour {
             velocity -= transform.right * speed;
         }
 
+        if (velocity.Equals(Vector3.zero)) MoveType = 0;
+        else if (speed.Equals(_playerData.Speed)) MoveType = 1;
+        else if (speed.Equals(_playerData.SprintSpeed)) MoveType = 2;
+
         velocity.y = GetComponent<Rigidbody>().velocity.y;
 
         if (Input.GetKeyDown(KeyCode.Space) && Physics.Raycast(transform.position, -transform.up, 1.1f)) {
@@ -72,7 +86,7 @@ public class PlayerMovement : NetworkBehaviour {
                 RaycastHit[] hits = Physics.RaycastAll(transform.position, -transform.up, 1.1f);
                 bool col = false;
                 foreach (RaycastHit raycastHit in hits) {
-                    if (raycastHit.transform.name.Equals(name))
+                    if (raycastHit.transform.Equals(transform))
                         continue;
 
                     col = true;
@@ -88,6 +102,8 @@ public class PlayerMovement : NetworkBehaviour {
     }
 
     private void MouseAttack() {
+        if (!CanMove) return;
+
         if (_playerData.CurrentWeapon != -1 && _playerData.GetWeaponData().CanShot()) {
             if (Input.GetMouseButtonDown(0) && !_playerData.GetWeaponData().IsPrimary) {
                 CmdShotBullet(_camera.transform.position, _camera.transform.forward);

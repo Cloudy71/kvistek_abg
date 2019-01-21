@@ -56,6 +56,7 @@ public class TurretBehaviour : NetworkBehaviour {
                     bullet.GetComponent<Bullet>().Speed = 190f;
                     bullet.transform.position = transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).position;
                     bullet.transform.LookAt(Target.transform.position + new Vector3(0f, 1f, 0f));
+                    NetworkServer.Spawn(bullet);
                 }
             }
         }

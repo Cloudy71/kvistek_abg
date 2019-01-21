@@ -289,9 +289,10 @@ GameObject:
   - component: {fileID: 4570497193108923889}
   - component: {fileID: 9131613584657099601}
   - component: {fileID: 4570497193108923406}
+  - component: {fileID: 1648737383336831703}
   m_Layer: 0
   m_Name: Turret
-  m_TagString: Untagged
+  m_TagString: Breakable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -357,7 +358,7 @@ MonoBehaviour:
   m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TransformSyncMode: 3
+  m_TransformSyncMode: 1
   m_SendInterval: 1
   m_SyncRotationAxis: 7
   m_RotationSyncCompression: 0
@@ -381,7 +382,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Target: {fileID: 4570497193661067225}
   m_ChildIndex: 0
-  m_SendInterval: 0.1
+  m_SendInterval: 1
   m_SyncRotationAxis: 7
   m_RotationSyncCompression: 0
   m_MovementThreshold: 0.001
@@ -400,7 +401,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AttackSpeed: 0.33
-  Damage: 10
+  Damage: 20
   Range: 32
   Target: {fileID: 0}
 --- !u!54 &4570497193108923406
@@ -419,6 +420,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &1648737383336831703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4570497193108923404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c35c61357c122e45ada345ab9eb2e52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Health: 100
+  DamageReduction: 0
 --- !u!1 &4570497193661067222
 GameObject:
   m_ObjectHideFlags: 0

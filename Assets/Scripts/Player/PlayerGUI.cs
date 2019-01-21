@@ -10,11 +10,13 @@ public class PlayerGUI : NetworkBehaviour {
     private PlayerData _playerData;
 
     private float _redScreen;
+    private float _blackScreen;
 
     // Use this for initialization
     void Start() {
         _playerData = GetComponent<PlayerData>();
         _redScreen = 0f;
+        _blackScreen = 0f;
     }
 
     // Update is called once per frame
@@ -23,18 +25,32 @@ public class PlayerGUI : NetworkBehaviour {
 
     private void FixedUpdate() {
         if (_redScreen > 0f) {
-            _redScreen -= 0.005f;
+            _redScreen -= 0.01f;
             if (_redScreen < 0f) _redScreen = 0f;
+        }
+
+        if (_blackScreen > 0f) {
+            _blackScreen -= 0.0025f;
+            if (_blackScreen < 0f) _blackScreen = 0f;
         }
     }
 
     public void GoRed() {
-        RpcGoRed(connectionToClient);
+        TargetGoRed(connectionToClient);
     }
 
     [TargetRpc]
-    public void RpcGoRed(NetworkConnection target) {
+    public void TargetGoRed(NetworkConnection target) {
         _redScreen = 0.5f;
+    }
+
+    public void GoBlack() {
+        TargetGoBlack(connectionToClient);
+    }
+
+    [TargetRpc]
+    public void TargetGoBlack(NetworkConnection target) {
+        _blackScreen = 1f;
     }
 
     private void OnGUI() {
@@ -51,6 +67,8 @@ public class PlayerGUI : NetworkBehaviour {
 
         GUI.color = new Color(1f, 1f, 1f, _redScreen);
         GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), AssetLoader.GetColor(Color.red));
+        GUI.color = new Color(1f, 1f, 1f, _blackScreen);
+        GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), AssetLoader.GetColor(Color.black));
         GUI.color = new Color(1f, 1f, 1f);
 
         if (ShowPickup) {
